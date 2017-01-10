@@ -1,4 +1,13 @@
 {
-  "components": {},
-  "dependencies": {}
+  "components": {
+    "plugins": {
+      "ConstraintChecker": {
+        "src": "src/plugins/ConstraintChecker",
+        "test": "test/plugins/ConstraintChecker"
+      }
+    }
+  },
+  "dependencies": {
+    "plugins": {}
+  }
 }

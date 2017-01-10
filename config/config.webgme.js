@@ -7,6 +7,7 @@ var config = require('webgme/config/config.default'),
     validateConfig = require('webgme/config/validator');
 
 // The paths can be loaded from the webgme-setup.json
+config.plugin.basePaths.push(__dirname + '/../src/plugins');
 
 
 
@@ -20,6 +21,6 @@ var config = require('webgme/config/config.default'),
 
 
 
-config.mongo.uri = 'mongodb://127.0.0.1:27017/constraint_checker';
+config.mongo.uri = 'mongodb://127.0.0.1:27017/webgme_constraint_checker';
 validateConfig(config);
 module.exports = config;
