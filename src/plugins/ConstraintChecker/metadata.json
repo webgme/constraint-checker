@@ -1,14 +1,34 @@
 {
   "id": "ConstraintChecker",
-  "name": "ConstraintChecker",
-  "version": "0.1.0",
-  "description": "",
+  "name": "Constraint Checker",
+  "version": "1.0.0",
+  "description": "Made to run from webhook.",
   "icon": {
     "class": "glyphicon glyphicon-cog",
     "src": ""
   },
   "disableServerSideExecution": false,
-  "disableBrowserSideExecution": false,
+  "disableBrowserSideExecution": true,
   "writeAccessRequired": false,
-  "configStructure": []
+  "configStructure": [
+    {
+      "name": "constraintType",
+      "displayName": "Constraint type",
+      "description": "Which constraints to check",
+      "value": "META",
+      "valueType": "string",
+      "valueItems": [
+        "META",
+        "CUSTOM",
+        "BOTH"
+      ]
+    },
+    {
+      "name": "mongoUri",
+      "displayName": "mongoUri",
+      "description": "mongoUri",
+      "value": "mongodb://127.0.0.1:27017/webgme_constraint_results",
+      "valueType": "string"
+    }
+  ]
 }

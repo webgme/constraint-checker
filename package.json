@@ -11,7 +11,8 @@
     "plugin": "node ./node_modules/webgme/src/bin/run_plugin.js",
     "pluginHook": "node ./node_modules/webgme/src/bin/plugin_hook.js",
     "users": "node ./node_modules/webgme/src/bin/usermanager.js",
-    "clean_up": "node ./node_modules/webgme/src/bin/clean_up.js"
+    "clean_up": "node ./node_modules/webgme/src/bin/clean_up.js",
+    "webhook": "node ./src/webhooks/constraintChecker.js"
   },
   "version": "1.0.0",
   "peerDependencies": {
@@ -22,5 +23,9 @@
     "rimraf": "^2.4.0",
     "chai": "^3.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "mongodb": "2.2.19",
+    "q": "^1.4.1",
+    "webgme": "^2.8.0"
+  }
 }
