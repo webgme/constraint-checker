@@ -4,15 +4,18 @@
  */
 
 'use strict';
-var testFixture = require('../../globals');
+var testFixture = require('../../globals'),
+    mongodb = require('mongodb');
 
-describe('ConstraintChecker', function () {
+describe.only('ConstraintChecker', function () {
     var gmeConfig = testFixture.getGmeConfig(),
         expect = testFixture.expect,
         logger = testFixture.logger.fork('ConstraintChecker'),
         PluginCliManager = testFixture.WebGME.PluginCliManager,
         projectName = 'testProject',
         pluginName = 'ConstraintChecker',
+        Q = testFixture.Q,
+        db,
         project,
         gmeAuth,
         storage,
@@ -42,6 +45,17 @@ describe('ConstraintChecker', function () {
                 commitHash = importResult.commitHash;
                 return project.createBranch('test', commitHash);
             })
+            .then(function () {
+                var deferred = Q.defer();
+                mongodb.MongoClient.connect(global.constraintCheckerHookConfig.mongoUri)
+                    .then(function (db_) {
+                        db = db_;
+                        global.db = db;
+                        deferred.resolve();
+                    })
+                    .catch(deferred.reject);
+                return deferred.promise;
+            })
             .nodeify(done);
     });
 
@@ -50,18 +64,19 @@ describe('ConstraintChecker', function () {
             .then(function () {
                 return gmeAuth.unload();
             })
+            .then(function () {
+                //FIXME: close db
+            })
             .nodeify(done);
     });
 
-    it('should run plugin and update the branch', function (done) {
+    it('should run checker on empty project and return hasViolation=false', function (done) {
         var manager = new PluginCliManager(null, logger, gmeConfig),
             pluginConfig = {
             },
             context = {
                 project: project,
-                commitHash: commitHash,
-                branchName: 'test',
-                activeNode: '/1',
+                commitHash: commitHash
             };
 
         manager.executePlugin(pluginName, pluginConfig, context, function (err, pluginResult) {
@@ -69,11 +84,8 @@ describe('ConstraintChecker', function () {
             expect(typeof pluginResult).to.equal('object');
             expect(pluginResult.success).to.equal(true);
 
-            project.getBranchHash('test')
-                .then(function (branchHash) {
-                    expect(branchHash).to.not.equal(commitHash);
-                })
-                .nodeify(done);
+            // TODO: Check persisted results
+            done();
         });
     });
 });

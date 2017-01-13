@@ -29,4 +29,18 @@ WebGME.addToRequireJsPaths(gmeConfig);
 
 testFixture.getGmeConfig = getGmeConfig;
 
+global.constraintCheckerHookConfig = {
+    "id": "ConstraintCheckerHook",
+    "origin": "http://127.0.0.1",
+    "port": 8080,
+    "description": "Checks if there are any meta violations in the project",
+    "events": [
+        "COMMIT"
+    ],
+    "addAtProjectCreation": true,
+    "activeAtProjectCreation": true,
+    "mongoUri": "mongodb://127.0.0.1:27017/webgme_constraint_results_tests",
+    "mongoOptions": {}
+};
+
 module.exports = testFixture;

@@ -1,6 +1,6 @@
 /*jshint node:true, mocha:true*/
 describe('ConstraintResults', function() {
-    var testFixture = require('../../globals'),  // TODO: May need to change this if not created from webgme-cli
+    var testFixture = require('../../globals'),
         superagent = testFixture.superagent,
         expect = testFixture.expect,
         gmeConfig = testFixture.getGmeConfig(),

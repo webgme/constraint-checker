@@ -16,7 +16,7 @@
     ],
     "addAtProjectCreation": true,
     "activeAtProjectCreation": true,
-    "mongouri": "mongodb://127.0.0.1:27017/webgme_constraint_results",
+    "mongoUri": "mongodb://127.0.0.1:27017/webgme_constraint_results",
     "mongoOptions": {}
   }
 }
