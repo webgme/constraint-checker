@@ -53,7 +53,7 @@ define([
      * - Do NOT put any user interaction logic UI, etc. inside this method.
      * - callback always has to be called even if error happened.
      *
-     * @param {function(string, plugin.PluginResult)} callback - the result callback
+     * @param {function(null|Error, plugin.PluginResult)} callback - the result callback
      */
     ConstraintChecker.prototype.main = function (callback) {
         var self = this,
@@ -67,7 +67,7 @@ define([
 
         // TODO: Check meta consistency
         if (typeof db === 'undefined') {
-            throw new Error('Cannot run without db');
+            callback(new Error('Cannot run without db'), self.result);
         }
 
         coll = db.collection(self.project.projectId);

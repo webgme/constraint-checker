@@ -7,7 +7,7 @@
 var testFixture = require('../../globals'),
     mongodb = require('mongodb');
 
-describe.only('ConstraintChecker', function () {
+describe('ConstraintChecker', function () {
     var gmeConfig = testFixture.getGmeConfig(),
         expect = testFixture.expect,
         logger = testFixture.logger.fork('ConstraintChecker'),
@@ -15,6 +15,7 @@ describe.only('ConstraintChecker', function () {
         projectName = 'testProject',
         pluginName = 'ConstraintChecker',
         Q = testFixture.Q,
+        resultCollection,
         db,
         project,
         gmeAuth,
@@ -56,6 +57,9 @@ describe.only('ConstraintChecker', function () {
                     .catch(deferred.reject);
                 return deferred.promise;
             })
+            .then(function () {
+                resultCollection = db.collection(project.projectId);
+            })
             .nodeify(done);
     });
 
@@ -70,7 +74,7 @@ describe.only('ConstraintChecker', function () {
             .nodeify(done);
     });
 
-    it('should run checker on empty project and return hasViolation=false', function (done) {
+    it('should run checker on empty project and insert hasViolation=false', function (done) {
         var manager = new PluginCliManager(null, logger, gmeConfig),
             pluginConfig = {
             },
@@ -84,8 +88,15 @@ describe.only('ConstraintChecker', function () {
             expect(typeof pluginResult).to.equal('object');
             expect(pluginResult.success).to.equal(true);
 
-            // TODO: Check persisted results
-            done();
+            resultCollection.findOne({_id: commitHash})
+                .then(function (result) {
+                    expect(result.isRunning).to.equal(false);
+                    expect(result.metaInconsistent).to.equal(false);
+                    expect(result.hasViolation).to.equal(false);
+
+                    done();
+                })
+                .catch(done);
         });
     });
 });
