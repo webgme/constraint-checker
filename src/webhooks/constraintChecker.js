@@ -70,23 +70,24 @@ function Handler(options) {
 
         app.use(bodyParser.json());
 
-        app.get(['', '/', '/result', '/results'], function (req, res) {
-            res.json(results);
-        });
-
         app.post('/' + HOOK_ID, function (req, res) {
             var payload = req.body;
-            runPlugin(payload)
-                .finally(function () {
-                    logger.info('done');
-                });
+            logger.info('hook triggered');
+            if (payload.event === 'COMMIT') {
+                runPlugin(payload)
+                    .finally(function () {
+                        logger.info('done');
+                    });
+            } else {
+                logger.warn('Unexpected event', JSON.stringify(payload));
+            }
 
             res.sendStatus(200);
         });
 
-        app.get('/:ownerId/:projectName/status/:commitHash', function (req, res, next) {
+        app.get('/' + HOOK_ID + '/:ownerId/:projectName/status/:commitHash', function (req, res, next) {
             var collection = db.collection(req.params.ownerId + '+' + req.params.projectName);
-
+            logger.info('status requested');
             collection.findOne({_id: '#' + req.params.commitHash})
                 .then(function (result) {
                     var status = {
@@ -104,6 +105,19 @@ function Handler(options) {
                     }
 
                     res.json(status);
+                })
+                .catch(function (err) {
+                    logger.error(err);
+                    next(err);
+                });
+        });
+
+        app.get('/' + HOOK_ID + '/:ownerId/:projectName/result/:commitHash', function (req, res, next) {
+            var collection = db.collection(req.params.ownerId + '+' + req.params.projectName);
+            logger.info('result requested');
+            collection.findOne({_id: '#' + req.params.commitHash})
+                .then(function (result) {
+                    res.json(result);
                 })
                 .catch(function (err) {
                     logger.error(err);

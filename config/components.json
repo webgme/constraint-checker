@@ -1,0 +1,9 @@
+{
+  "GenericUIProjectRepositoryWidget": {
+    "commitBadges": {
+      "ConstraintCheckerCommitBadge": {
+        "path": "widgets/ConstraintCheckerCommitBadge/ConstraintCheckerCommitBadgeWidget"
+      }
+    }
+  }
+}

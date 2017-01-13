@@ -1,0 +1,13 @@
+i.constraint-checker-commit-badge.error {
+  color: #bd2c00; }
+i.constraint-checker-commit-badge.is-running {
+  color: #cea61b; }
+i.constraint-checker-commit-badge.meta-inconsistent {
+  color: #bd2c00; }
+i.constraint-checker-commit-badge.has-violation {
+  color: #bd2c00;
+  cursor: pointer; }
+i.constraint-checker-commit-badge.no-violation {
+  color: #55a532; }
+i.constraint-checker-commit-badge.unavailable {
+  color: grey; }

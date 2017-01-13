@@ -1,0 +1,22 @@
+i.constraint-checker-commit-badge {
+  &.error {
+    color: #bd2c00;
+  }
+  &.is-running {
+    color: #cea61b;
+  }
+  &.meta-inconsistent {
+    color: #bd2c00;
+    //cursor: pointer;
+  }
+  &.has-violation {
+    color: #bd2c00;
+    cursor: pointer;
+  }
+  &.no-violation {
+    color: #55a532;
+  }
+  &.unavailable {
+    color: grey;
+  }
+}

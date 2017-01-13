@@ -11,14 +11,16 @@ config.plugin.basePaths.push(__dirname + '/../src/plugins');
 
 
 
+config.visualization.panelPaths.push(__dirname + '/../src/visualizers/panels');
 
 
-
-
-// Visualizer descriptors
+config.rest.components['routers/ConstraintResults'] = __dirname + '/../src/routers/ConstraintResults/ConstraintResults.js';
 
 // Add requirejs paths
-
+config.requirejsPaths = {
+  'panels': './src/visualizers/panels',
+  'widgets': './src/visualizers/widgets'
+};
 
 
 config.mongo.uri = 'mongodb://127.0.0.1:27017/webgme_constraint_checker';

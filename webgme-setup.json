@@ -5,9 +5,27 @@
         "src": "src/plugins/ConstraintChecker",
         "test": "test/plugins/ConstraintChecker"
       }
+    },
+    "visualizers": {
+      "ConstraintCheckerCommitBadge": {
+        "src": "panels/ConstraintCheckerCommitBadge/ConstraintCheckerCommitBadgePanel",
+        "title": "ConstraintCheckerCommitBadge",
+        "panel": "src/visualizers/panels/ConstraintCheckerCommitBadge",
+        "secondary": true,
+        "widget": "src/visualizers/widgets/ConstraintCheckerCommitBadge"
+      }
+    },
+    "routers": {
+      "ConstraintResults": {
+        "src": "src/routers/ConstraintResults",
+        "test": "test/routers/ConstraintResults",
+        "mount": "routers/ConstraintResults"
+      }
     }
   },
   "dependencies": {
-    "plugins": {}
+    "plugins": {},
+    "visualizers": {},
+    "routers": {}
   }
 }
