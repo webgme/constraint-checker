@@ -14,7 +14,6 @@ var webgme = require('webgme'),
     HOOK_ID = 'ConstraintCheckerHook',
     mongodb = require('mongodb'),
     binRunPlugin = require('webgme/src/bin/run_plugin'),
-
     configDir = path.join(process.cwd(), 'config'),
     gmeConfig = require(configDir),
     logger = webgme.Logger.create('gme:' + HOOK_ID, gmeConfig.bin.log, false);

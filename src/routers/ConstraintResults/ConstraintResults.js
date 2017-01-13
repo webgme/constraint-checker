@@ -16,7 +16,12 @@
 var express = require('express'),
     superagent = require('superagent'),
     router = express.Router(),
-    HOOK_BASE_URL = 'http://127.0.0.1:8080/ConstraintCheckerHook'; // FIXME: should come from components.json
+    path = require('path'),
+    STORAGE_CONSTANTS = requireJS('common/storage/constants'),
+    componentJson = require(path.join(process.cwd(), 'config', 'components.json')),
+    // Allow settings on global for tests.
+    hookConfig = global.constraintCheckerHookConfig || componentJson.ConstraintCheckerHook,
+    HOOK_BASE_URL = hookConfig.origin + ':' + hookConfig.port + '/' + hookConfig.id;
 
 // FIXME: Check authorization on each request!
 
@@ -42,15 +47,13 @@ function initialize(middlewareOpts) {
     logger.debug('initializing ...');
 
     // Ensure authenticated can be used only after this rule.
-    router.use('*', function (req, res, next) {
+    router.use('*', ensureAuthenticated, function (req, res, next) {
         // TODO: set all headers, check rate limit, etc.
 
         // This header ensures that any failures with authentication won't redirect.
         res.setHeader('X-WebGME-Media-Type', 'webgme.v1');
         next();
     });
-
-    // Use ensureAuthenticated if the routes require authentication. (Can be set explicitly for each route.)
 
     router.get('/:ownerId/:projectName/:type/:commitHash', function (req, res, next) {
         var hookUrl = [
@@ -69,6 +72,31 @@ function initialize(middlewareOpts) {
             }
         });
     });
+
+    if (hookConfig.addAtProjectCreation === true) {
+        logger.info('Will add Constraint Checker Hook to new projects');
+        middlewareOpts.safeStorage.addEventListener(STORAGE_CONSTANTS.PROJECT_CREATED, function (_storage, data) {
+            gmeAuth.metadataStorage.getProject(data.projectId)
+                .then(function (projectData) {
+                    var now = (new Date()).toISOString(),
+                        hooks = projectData.hooks || {};
+
+                    hooks[hookConfig.id] = {
+                        url: HOOK_BASE_URL,
+                        description: hookConfig.description,
+                        events: hookConfig.events,
+                        active: hookConfig.activeAtProjectCreation,
+                        createdAt: now,
+                        updatedAt: now
+                    };
+
+                    return gmeAuth.metadataStorage.updateProjectHooks(data.projectId, hooks);
+                })
+                .catch(function (err) {
+                    logger.error('Failed to add constrain checker hook at project creation', err);
+                });
+        });
+    }
 }
 
 /**
