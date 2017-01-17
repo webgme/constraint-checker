@@ -20,7 +20,8 @@ var express = require('express'),
     STORAGE_CONSTANTS = requireJS('common/storage/constants'),
     componentJson = require(path.join(process.cwd(), 'config', 'components.json')),
     // Allow settings on global for tests.
-    hookConfig = global.constraintCheckerHookConfig || componentJson.ConstraintCheckerHook,
+    hookConfig = global.constraintCheckerHookConfig || componentJson.ConstraintCheckerHook ||
+        require(path.join('..', '..', '..', 'config', 'components.json')).ConstraintCheckerHook,
     HOOK_BASE_URL = hookConfig.origin + ':' + hookConfig.port + '/' + hookConfig.id;
 
 // FIXME: Check authorization on each request!
@@ -42,7 +43,9 @@ var express = require('express'),
 function initialize(middlewareOpts) {
     var logger = middlewareOpts.logger.fork('ConstraintResults'),
         ensureAuthenticated = middlewareOpts.ensureAuthenticated,
-        getUserId = middlewareOpts.getUserId;
+        getUserId = middlewareOpts.getUserId,
+        gmeAuth = middlewareOpts.gmeAuth,
+        storage = middlewareOpts.safeStorage;
 
     logger.debug('initializing ...');
 
@@ -53,6 +56,21 @@ function initialize(middlewareOpts) {
         // This header ensures that any failures with authentication won't redirect.
         res.setHeader('X-WebGME-Media-Type', 'webgme.v1');
         next();
+    });
+
+    router.get('/webhookStatus', function (req, res, next) {
+        var hookUrl = [
+            HOOK_BASE_URL,
+            'status'
+        ].join('/');
+
+        superagent.get(hookUrl).end(function (err, data) {
+            if (err) {
+                res.json({error: 'No response from webhook!', errMessage: err.message});
+            } else {
+                res.json(data.body);
+            }
+        });
     });
 
     router.get('/:ownerId/:projectName/:type/:commitHash', function (req, res, next) {
@@ -75,7 +93,7 @@ function initialize(middlewareOpts) {
 
     if (hookConfig.addAtProjectCreation === true) {
         logger.info('Will add Constraint Checker Hook to new projects');
-        middlewareOpts.safeStorage.addEventListener(STORAGE_CONSTANTS.PROJECT_CREATED, function (_storage, data) {
+        storage.addEventListener(STORAGE_CONSTANTS.PROJECT_CREATED, function (_storage, data) {
             gmeAuth.metadataStorage.getProject(data.projectId)
                 .then(function (projectData) {
                     var now = (new Date()).toISOString(),

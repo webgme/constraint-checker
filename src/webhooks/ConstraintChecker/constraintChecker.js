@@ -11,18 +11,21 @@ var webgme = require('webgme'),
     path = require('path'),
     Q = require('q'),
     bodyParser = require('body-parser'),
-    HOOK_ID = 'ConstraintCheckerHook',
     mongodb = require('mongodb'),
     binRunPlugin = require('webgme/src/bin/run_plugin'),
     configDir = path.join(process.cwd(), 'config'),
     gmeConfig = require(configDir),
+    componentJson = require(path.join(process.cwd(), 'config', 'components.json')),
+    hookConfig = componentJson.ConstraintCheckerHook ||
+        require(path.join('..', '..', '..', 'config', 'components.json')).ConstraintCheckerHook,
+    HOOK_ID = hookConfig.id,
     logger = webgme.Logger.create('gme:' + HOOK_ID, gmeConfig.bin.log, false);
 
 
 webgme.addToRequireJsPaths(gmeConfig);
 
 /**
- * @param {string} [options.handlerPort] - Port hook handler should listen too (gmeConfig.server.port + 1).
+ * @param {string} [options.port] - Port hook handler should listen too (gmeConfig.server.port + 1).
  * @constructor
  */
 function Handler(options) {
@@ -41,6 +44,10 @@ function Handler(options) {
 
         results.unshift(result);
 
+        if (results.length > 100) {
+            results.pop();
+        }
+
         args = args.concat([
             '-o', payload.owner,
             '-u', payload.data.userId,
@@ -50,12 +57,14 @@ function Handler(options) {
         return binRunPlugin.main(args)
             .then(function (pluginResult) {
                 result.pluginResult = pluginResult;
-                if (pluginResult.success) {
-                    logger.info(JSON.stringify(pluginResult, null, 2));
-                    logger.info('SUCCEEDED!');
-                } else {
+                if (pluginResult.success === true) {
+                    logger.debug(JSON.stringify(pluginResult, null, 2));
+                    logger.debug('SUCCEEDED!');
+                } else if (pluginResult.error) {
                     logger.error(JSON.stringify(pluginResult, null, 2));
                     logger.error('FAILED!');
+                } else {
+                    
                 }
             })
             .catch(function (err) {
@@ -71,11 +80,11 @@ function Handler(options) {
 
         app.post('/' + HOOK_ID, function (req, res) {
             var payload = req.body;
-            logger.info('hook triggered');
+            logger.debug('hook triggered');
             if (payload.event === 'COMMIT') {
                 runPlugin(payload)
                     .finally(function () {
-                        logger.info('done');
+                        logger.debug('done');
                     });
             } else {
                 logger.warn('Unexpected event', JSON.stringify(payload));
@@ -86,7 +95,6 @@ function Handler(options) {
 
         app.get('/' + HOOK_ID + '/:ownerId/:projectName/status/:commitHash', function (req, res, next) {
             var collection = db.collection(req.params.ownerId + '+' + req.params.projectName);
-            logger.info('status requested');
             collection.findOne({_id: '#' + req.params.commitHash})
                 .then(function (result) {
                     var status = {
@@ -113,7 +121,6 @@ function Handler(options) {
 
         app.get('/' + HOOK_ID + '/:ownerId/:projectName/result/:commitHash', function (req, res, next) {
             var collection = db.collection(req.params.ownerId + '+' + req.params.projectName);
-            logger.info('result requested');
             collection.findOne({_id: '#' + req.params.commitHash})
                 .then(function (result) {
                     res.json(result);
@@ -124,11 +131,15 @@ function Handler(options) {
                 });
         });
 
+        app.get('/' + HOOK_ID + '/status', function (req, res) {
+            res.json(results);
+        });
+
         server = app.listen(options.port);
         logger.info('Webhook listening at:  http://127.0.0.1:' + options.port);
         logger.info('Connecting to mongodb at:' + options.mongoUri);
 
-        mongodb.MongoClient.connect(options.mongoUri)
+        mongodb.MongoClient.connect(options.mongoUri, hookConfig.mongoOptions)
             .then(function (db_) {
                 db = db_;
                 global.db = db;
@@ -155,12 +166,12 @@ if (require.main === module) {
     program
         .version('1.0.0')
         .description('Starts a webhook handler server that evaluates the constraints using ConstraintChecker plugin. ' +
-        'The cwd should be the root directory of the webgme domain repo and the gmeConfig used can be altered using ' +
-        'the environment variable NODE_ENV.')
+            'The cwd should be the root directory of the webgme domain repo and the gmeConfig used can be altered using ' +
+            'the environment variable NODE_ENV.')
         .option('-p, --port [number]', 'Port the webhook-handler should listen at ' +
-            '[components.json[ConstraintCheckerHook].port || gmeConfig.server.port + 1]', 8080)
+            '[' + hookConfig.port + ']', hookConfig.port)
         .option('-u, --mongoUri [string]', 'Mongodb URI where data is persisted ' +
-            '[mongodb://127.0.0.1:27017/webgme_constraint_results]', 'mongodb://127.0.0.1:27017/webgme_constraint_results')
+            '[' + hookConfig.mongoUri + ']', hookConfig.mongoUri)
         .on('--help', function () {
             var i,
                 env = process.env.NODE_ENV || 'default';
@@ -184,12 +195,12 @@ if (require.main === module) {
     } else {
         handler = new Handler(program);
 
-        handler.start(function(err) {
+        handler.start(function (err) {
             if (err) {
                 logger.error(err);
                 process.exit(1);
             } else {
-                logger.info('Webhook is running...');
+                logger.info('Webhook is listening at ' + program.port);
             }
         });
 

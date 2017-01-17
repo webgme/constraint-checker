@@ -60,7 +60,6 @@ define([
             config = this.getCurrentConfig(),
             db = global.db,
             checker = new CC.Checker(this.core, this.logger),
-            result,
             coll;
 
         checker.initialize(this.rootNode, this.commitHash, config.constraintType);
@@ -100,6 +99,8 @@ define([
                         info: result.info,
                         hasViolation: false
                     };
+
+                    self.result.setSuccess(true);
                 } else {
                     // FIXME: The constraint checker in webgme should not return all these results...
                     for (key in result) {
@@ -116,8 +117,6 @@ define([
                 return coll.updateOne({_id: self.commitHash}, data, {upsert: true});
             })
             .then(function () {
-
-                self.result.setSuccess(true);
                 callback(null, self.result);
             })
             .catch(function (err) {

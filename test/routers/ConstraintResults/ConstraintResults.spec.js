@@ -5,10 +5,8 @@ describe('ConstraintResults router', function() {
         expect = testFixture.expect,
         gmeConfig = testFixture.getGmeConfig(),
         server = testFixture.WebGME.standaloneServer(gmeConfig),
-        // TODO: If not using webgme-cli, replace the mntPt w/ the desired mount point
-        // If using the webgme-cli, this will look up the mount point for the given router
         mntPt = require('../../../webgme-setup.json').components.routers['ConstraintResults'].mount,
-        webHookHandler = require('../../../src/webhooks/constraintChecker'),
+        webHookHandler = require('../../../src/webhooks/ConstraintChecker/ConstraintChecker'),
         gmeAuth,
         urlFor = function(action) {
             return [

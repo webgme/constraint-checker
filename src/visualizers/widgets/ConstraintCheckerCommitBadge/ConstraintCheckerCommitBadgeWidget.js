@@ -34,6 +34,9 @@ define([
             if (err) {
                 self.$el.addClass('error fa fa-exclamation');
                 self.$el.attr('title', 'Error');
+            } else if (status.exists === false) {
+                self.$el.addClass('unavailable fa fa-circle-thin');
+                self.$el.attr('title', 'Results unavailable');
             } else if (status.isRunning === true) {
                 self.$el.addClass('is-running fa fa-circle');
                 self.$el.attr('title', 'Meta constraints are being checked...');
@@ -57,7 +60,7 @@ define([
             } else if (status.hasViolation === false) {
                 self.$el.addClass('no-violation fa fa-check');
                 self.$el.attr('title', 'No meta constraint violations');
-            }  else {
+            } else {
                 self.$el.addClass('unavailable fa fa-circle-thin');
                 self.$el.attr('title', 'Results unavailable');
             }

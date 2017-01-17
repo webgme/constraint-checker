@@ -1,22 +1,17 @@
 {
   "name": "webgme-constraint-checker",
+  "bin": {
+    "webgme-constraint-checker": "./src/webhooks/ConstraintChecker/ConstraintChecker"
+  },
+  "main": "./src/webhooks/ConstraintChecker/ConstraintChecker.js",
   "scripts": {
     "start": "node app.js",
-    "test": "node ./node_modules/mocha/bin/mocha --recursive test",
-    "apply": "node ./node_modules/webgme/src/bin/apply.js",
-    "diff": "node ./node_modules/webgme/src/bin/diff.js",
-    "export": "node ./node_modules/webgme/src/bin/export.js",
-    "import": "node ./node_modules/webgme/src/bin/import.js",
-    "merge": "node ./node_modules/webgme/src/bin/merge.js",
-    "plugin": "node ./node_modules/webgme/src/bin/run_plugin.js",
-    "pluginHook": "node ./node_modules/webgme/src/bin/plugin_hook.js",
-    "users": "node ./node_modules/webgme/src/bin/usermanager.js",
-    "clean_up": "node ./node_modules/webgme/src/bin/clean_up.js",
-    "webhook": "node ./src/webhooks/constraintChecker.js"
+    "webhook": "node ./src/webhooks/ConstraintChecker/ConstraintChecker.js",
+    "test": "node ./node_modules/mocha/bin/mocha --recursive test"
   },
   "version": "1.0.0",
   "peerDependencies": {
-    "webgme": "^2.0.0"
+    "webgme": "^2.8.0"
   },
   "devDependencies": {
     "mocha": "^2.2.5",
@@ -25,7 +20,6 @@
   },
   "dependencies": {
     "mongodb": "2.2.19",
-    "q": "^1.4.1",
-    "webgme": "^2.8.0"
+    "q": "^1.4.1"
   }
 }
