@@ -30,13 +30,31 @@ describe('ConstraintResults router', function() {
     });
 
     it('should add hook at creation', function(done) {
-        superagent.put(server.getUrl(), '/api/projects/guest/shouldgethook')
+        superagent.put(server.getUrl(), '/api/projects/guest/ShouldHaveHook')
             .send({
                 type: 'file',
                 seedName: 'EmptyProject'
             })
             .end(function(err, res) {
-                expect(res.statusCode).to.equal(201);
+                expect(res.statusCode).to.equal(204);
+                done();
+            });
+    });
+
+    it('should return 403 if no project access', function(done) {
+        superagent.get(urlFor('guest/doesNotExist/status/1a040796c8ce0a957ba152d1f94d9ec453667acf'))
+            .end(function(err, res) {
+                console.log(err);
+                expect(res.statusCode).to.equal(403);
+                done();
+            });
+    });
+
+    it.skip('should return 200 for webhookStatus', function(done) {
+        superagent.get(urlFor('webhookStatus'))
+            .end(function(err, res) {
+                console.log(err);
+                expect(res.statusCode).to.equal(403);
                 done();
             });
     });

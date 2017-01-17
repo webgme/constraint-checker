@@ -59,12 +59,12 @@ function Handler(options) {
                 result.pluginResult = pluginResult;
                 if (pluginResult.success === true) {
                     logger.debug(JSON.stringify(pluginResult, null, 2));
-                    logger.debug('SUCCEEDED!');
+                    logger.debug('success');
                 } else if (pluginResult.error) {
                     logger.error(JSON.stringify(pluginResult, null, 2));
-                    logger.error('FAILED!');
+                    logger.error('Unexpected error');
                 } else {
-                    
+                    logger.debug('constraints not met');
                 }
             })
             .catch(function (err) {
