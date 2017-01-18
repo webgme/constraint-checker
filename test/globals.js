@@ -30,6 +30,11 @@ WebGME.addToRequireJsPaths(gmeConfig);
 
 testFixture.getGmeConfig = getGmeConfig;
 
+// FIXME: bug in 2.9.0 version
+testFixture.projectName2Id = function (projectName, userId) {
+    return testFixture.storageUtil.getProjectIdFromOwnerIdAndProjectName(userId, projectName);
+};
+
 testFixture.clearAndGetHookResultDB = function (uri, options, keepAlive) {
     var db;
     return mongodb.MongoClient.connect(uri, options)

@@ -59,12 +59,13 @@ function Handler(options) {
         return binRunPlugin.main(args)
             .then(function (pluginResult) {
                 result.pluginResult = pluginResult;
+                logger.debug(JSON.stringify(pluginResult, null, 2));
+
                 if (pluginResult.success === true) {
-                    logger.debug(JSON.stringify(pluginResult, null, 2));
                     logger.debug('success');
                 } else if (pluginResult.error) {
+                    logger.error('Unexpected error:');
                     logger.error(JSON.stringify(pluginResult, null, 2));
-                    logger.error('Unexpected error');
                 } else {
                     logger.debug('constraints not met');
                 }

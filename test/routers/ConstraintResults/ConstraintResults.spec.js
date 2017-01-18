@@ -1,5 +1,5 @@
 /*jshint node:true, mocha:true*/
-describe('ConstraintResults router', function() {
+describe('ConstraintResults Router', function() {
     var testFixture = require('../../globals'),
         superagent = testFixture.superagent,
         expect = testFixture.expect,
@@ -44,7 +44,6 @@ describe('ConstraintResults router', function() {
     it('should return 403 if no project access', function(done) {
         superagent.get(urlFor('guest/doesNotExist/status/1a040796c8ce0a957ba152d1f94d9ec453667acf'))
             .end(function(err, res) {
-                console.log(err);
                 expect(res.statusCode).to.equal(403);
                 done();
             });
@@ -53,7 +52,6 @@ describe('ConstraintResults router', function() {
     it.skip('should return 200 for webhookStatus', function(done) {
         superagent.get(urlFor('webhookStatus'))
             .end(function(err, res) {
-                console.log(err);
                 expect(res.statusCode).to.equal(403);
                 done();
             });
