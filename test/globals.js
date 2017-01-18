@@ -8,6 +8,7 @@
 'use strict';
 
 var testFixture = require('webgme/test/_globals'),
+    mongodb = require('mongodb'),
     WEBGME_CONFIG_PATH = '../config';
 
 // This flag will make sure the config.test.js is being used
@@ -29,10 +30,27 @@ WebGME.addToRequireJsPaths(gmeConfig);
 
 testFixture.getGmeConfig = getGmeConfig;
 
+testFixture.clearAndGetHookResultDB = function (uri, options, keepAlive) {
+    var db;
+    return mongodb.MongoClient.connect(uri, options)
+        .then(function (db_) {
+            db = db_;
+
+            return db.dropDatabase();
+        })
+        .then(function () {
+            if (keepAlive) {
+                return db;
+            } else {
+                return db.close();
+            }
+        });
+};
+
 global.constraintCheckerHookConfig = {
     "id": "ConstraintCheckerHook",
     "origin": "http://127.0.0.1",
-    "port": 8080,
+    "port": 9002,
     "description": "Checks if there are any meta violations in the project",
     "events": [
         "COMMIT"

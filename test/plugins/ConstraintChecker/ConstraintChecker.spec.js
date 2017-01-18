@@ -47,17 +47,15 @@ describe('ConstraintChecker', function () {
                 return project.createBranch('test', commitHash);
             })
             .then(function () {
-                var deferred = Q.defer();
-                mongodb.MongoClient.connect(global.constraintCheckerHookConfig.mongoUri)
-                    .then(function (db_) {
-                        db = db_;
-                        global.db = db;
-                        deferred.resolve();
-                    })
-                    .catch(deferred.reject);
-                return deferred.promise;
+                return testFixture.clearAndGetHookResultDB(
+                    global.constraintCheckerHookConfig.mongoUri,
+                    global.constraintCheckerHookConfig.mongoOptions,
+                    true // keep connection open and return it
+                );
             })
-            .then(function () {
+            .then(function (db_) {
+                db = db_;
+                global.db = db;
                 resultCollection = db.collection(project.projectId);
             })
             .nodeify(done);
@@ -69,10 +67,13 @@ describe('ConstraintChecker', function () {
                 return gmeAuth.unload();
             })
             .then(function () {
-                //FIXME: close db
+                global.db = null;
+                return db.close();
             })
             .nodeify(done);
     });
+
+    // TODO: Add tests for meta-inconsistencies and hasViolation.
 
     it('should run checker on empty project and insert hasViolation=false', function (done) {
         var manager = new PluginCliManager(null, logger, gmeConfig),

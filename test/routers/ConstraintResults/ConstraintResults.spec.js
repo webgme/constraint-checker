@@ -29,7 +29,7 @@ describe('ConstraintResults router', function() {
         server.stop(done);
     });
 
-    it('should add hook at creation', function(done) {
+    it.skip('should add hook at creation', function(done) {
         superagent.put(server.getUrl(), '/api/projects/guest/ShouldHaveHook')
             .send({
                 type: 'file',

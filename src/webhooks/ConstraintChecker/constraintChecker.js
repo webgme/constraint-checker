@@ -16,7 +16,7 @@ var webgme = require('webgme'),
     configDir = path.join(process.cwd(), 'config'),
     gmeConfig = require(configDir),
     componentJson = require(path.join(process.cwd(), 'config', 'components.json')),
-    hookConfig = componentJson.ConstraintCheckerHook ||
+    hookConfig = global.constraintCheckerHookConfig || componentJson.ConstraintCheckerHook ||
         require(path.join('..', '..', '..', 'config', 'components.json')).ConstraintCheckerHook,
     HOOK_ID = hookConfig.id,
     logger = webgme.Logger.create('gme:' + HOOK_ID, gmeConfig.bin.log, false);
@@ -25,13 +25,15 @@ var webgme = require('webgme'),
 webgme.addToRequireJsPaths(gmeConfig);
 
 /**
- * @param {string} [options.port] - Port hook handler should listen too (gmeConfig.server.port + 1).
+ * @param {string} [options.port] - Port for server
+ * @param {string} [options.mongoUri]
  * @constructor
  */
 function Handler(options) {
     var app = new Express(),
         db,
         results = [],
+        serverUrl,
         server;
 
     function runPlugin(payload) {
@@ -75,6 +77,7 @@ function Handler(options) {
 
     this.start = function (callback) {
         var deferred = Q.defer();
+        // Start server and connect to mongodb // connection will be available at global.db.
 
         app.use(bodyParser.json());
 
@@ -123,7 +126,11 @@ function Handler(options) {
             var collection = db.collection(req.params.ownerId + '+' + req.params.projectName);
             collection.findOne({_id: '#' + req.params.commitHash})
                 .then(function (result) {
-                    res.json(result);
+                    if (result) {
+                        res.json(result);
+                    } else {
+                        res.sendStatus(404);
+                    }
                 })
                 .catch(function (err) {
                     logger.error(err);
@@ -136,14 +143,18 @@ function Handler(options) {
         });
 
         server = app.listen(options.port);
-        logger.info('Webhook listening at:  http://127.0.0.1:' + options.port);
+        serverUrl = 'http://127.0.0.1:' + options.port;
+        logger.info('Webhook listening at:', serverUrl);
         logger.info('Connecting to mongodb at:' + options.mongoUri);
 
         mongodb.MongoClient.connect(options.mongoUri, hookConfig.mongoOptions)
             .then(function (db_) {
                 db = db_;
                 global.db = db;
-                deferred.resolve();
+                deferred.resolve({
+                    db: db,
+                    server: server
+                });
             })
             .catch(deferred.reject);
 
@@ -151,8 +162,29 @@ function Handler(options) {
     };
 
     this.stop = function (callback) {
-        server.close();
-        callback();
+        var deferred = Q.defer();
+        // Shutdown server and disconnect from mongodb.
+        if (server) {
+            server.close();
+            server = null;
+        }
+
+        if (db) {
+            db.close(function () {
+                db = null;
+                deferred.resolve();
+            });
+        } else {
+            deferred.resolve();
+        }
+
+        global.db = null;
+
+        return deferred.promise.nodeify(callback);
+    };
+
+    this.getUrl = function () {
+        return serverUrl;
     };
 }
 
