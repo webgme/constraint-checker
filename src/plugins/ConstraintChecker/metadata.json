@@ -7,7 +7,7 @@
     "class": "glyphicon glyphicon-cog",
     "src": ""
   },
-  "disableServerSideExecution": false,
+  "disableServerSideExecution": true,
   "disableBrowserSideExecution": true,
   "writeAccessRequired": false,
   "configStructure": [
