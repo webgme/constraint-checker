@@ -6,17 +6,19 @@
   "main": "./src/webhooks/ConstraintChecker/ConstraintChecker.js",
   "scripts": {
     "start": "node app.js",
-    "webhook": "node ./src/webhooks/ConstraintChecker/ConstraintChecker.js",
-    "test": "node ./node_modules/mocha/bin/mocha --recursive test"
+    "hook": "node ./src/webhooks/ConstraintChecker/ConstraintChecker.js",
+    "test": "node ./node_modules/mocha/bin/mocha --recursive test",
+    "test_cover": "node ./node_modules/istanbul/lib/cli.js --hook-run-in-context cover node_modules/mocha/bin/_mocha -- -R spec --timeout 10000 --recursive test"
   },
   "version": "1.0.0",
   "peerDependencies": {
     "webgme": "^2.8.0"
   },
   "devDependencies": {
+    "chai": "^3.0.0",
+    "istanbul": "^0.4.5",
     "mocha": "^2.2.5",
-    "rimraf": "^2.4.0",
-    "chai": "^3.0.0"
+    "rimraf": "^2.4.0"
   },
   "dependencies": {
     "mongodb": "2.2.19",
