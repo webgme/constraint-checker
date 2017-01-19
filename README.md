@@ -38,8 +38,8 @@ webgme import router ConstraintResults webgme-constraint-checker
 To start the webhook handler - do `TODO: command that runs .bin command`.
 
 ### Configuring webhook/router
-The default configuration is available at [components.json]('./config/components.json). If your repo does not have a `config/components.json` or the json lacks the key `'ConstraintCheckerHook'` the default will be used.
-If you intend to make your own configuration - make sure to copy all the keys.
+The default configuration is available at [components.json](config/components.json). If your repo does not have a `config/components.json` or the json lacks the key `'ConstraintCheckerHook'` the default will be used.
+If you intend to make your own configuration make sure to copy all the keys.
 
 #### Adding commit-badge
-In order to add the commit-badge to the project repository widget copy over the settings at `GenericUIProjectRepositoryWidget` inside the [components.json]('./config/components.json).
+In order to add the commit-badge to the project repository widget copy over the settings at `GenericUIProjectRepositoryWidget` inside the [components.json](config/components.json).
