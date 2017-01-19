@@ -1,7 +1,7 @@
 {
   "name": "webgme-constraint-checker",
   "bin": {
-    "webgme-constraint-checker": "./src/webhooks/ConstraintChecker/ConstraintChecker"
+    "webgme-constraint-checker": "./bin/webgme-constraint-checker"
   },
   "main": "./src/webhooks/ConstraintChecker/ConstraintChecker.js",
   "scripts": {
@@ -18,7 +18,9 @@
     "chai": "^3.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^2.2.5",
-    "rimraf": "^2.4.0"
+    "rimraf": "^2.4.0",
+    "commander": "^2.9.0",
+    "express": "^4.14.0"
   },
   "dependencies": {
     "mongodb": "2.2.19",

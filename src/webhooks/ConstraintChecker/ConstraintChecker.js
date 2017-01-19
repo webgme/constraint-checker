@@ -36,6 +36,13 @@ function Handler(options) {
         serverUrl,
         server;
 
+    if (gmeConfig.webhooks.enable !== true) {
+        throw new Error('gmeConfig.webhooks.enable must be true in order to dispatch events from the webgme server!');
+    }
+
+    options.mongoUri = options.mongoUri || hookConfig.mongoUri;
+    options.port = options.port || hookConfig.port;
+
     function runPlugin(payload) {
         var args = ['node', 'dummy.js', 'ConstraintChecker', payload.projectName],
             result = {
@@ -190,62 +197,3 @@ function Handler(options) {
 }
 
 module.exports = Handler;
-
-if (require.main === module) {
-    var Command = require('commander').Command,
-        program = new Command(),
-        handler;
-
-    program
-        .version('1.0.0')
-        .description('Starts a webhook handler server that evaluates the constraints using ConstraintChecker plugin. ' +
-            'The cwd should be the root directory of the webgme domain repo and the gmeConfig used can be altered using ' +
-            'the environment variable NODE_ENV.')
-        .option('-p, --port [number]', 'Port the webhook-handler should listen at ' +
-            '[' + hookConfig.port + ']', hookConfig.port)
-        .option('-u, --mongoUri [string]', 'Mongodb URI where data is persisted ' +
-            '[' + hookConfig.mongoUri + ']', hookConfig.mongoUri)
-        .on('--help', function () {
-            var i,
-                env = process.env.NODE_ENV || 'default';
-
-            console.log('  Examples:');
-            console.log();
-            console.log('    $ node constraintChecker.js');
-            console.log('    $ node constraintChecker.js -p 8080');
-            console.log();
-            console.log('  Plugin paths using ' + configDir + path.sep + 'config.' + env + '.js :');
-            console.log();
-            for (i = 0; i < gmeConfig.plugin.basePaths.length; i += 1) {
-                console.log('    "' + gmeConfig.plugin.basePaths[i] + '"');
-            }
-        })
-        .parse(process.argv);
-
-    if (gmeConfig.webhooks.enable !== true) {
-        logger.error('gmeConfig.webhooks.enable must be true in order to dispatch events from the webgme server!');
-        program.help();
-    } else {
-        handler = new Handler(program);
-
-        handler.start(function (err) {
-            if (err) {
-                logger.error(err);
-                process.exit(1);
-            } else {
-                logger.info('Webhook is listening at ' + program.port);
-            }
-        });
-
-        process.on('SIGINT', function () {
-            handler.stop(function (err) {
-                if (err) {
-                    logger.error(err);
-                    process.exit(1);
-                } else {
-                    process.exit(0);
-                }
-            });
-        });
-    }
-}
