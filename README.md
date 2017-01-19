@@ -33,7 +33,6 @@ webgme import router ConstraintResults webgme-constraint-checker
 To start the webhook handler first add it to package.json under scripts,
 ```json
   "scripts": {
-    ...
     "webgme-constraint-checker": "webgme-constraint-checker"
   },
 ```
