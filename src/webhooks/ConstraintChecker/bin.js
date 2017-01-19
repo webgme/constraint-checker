@@ -34,6 +34,8 @@ handler.start(function (err) {
         console.error(err);
         process.exit(1);
     }
+
+    console.log('Started successfully!');
 });
 
 process.on('SIGINT', function () {
