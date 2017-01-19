@@ -30,14 +30,14 @@ The router forwards result/status requests ensuring the user has the right acces
 webgme import router ConstraintResults webgme-constraint-checker
 ```
 #### Webhook
-To start the webhook handler first add it to package.json under scripts,
+To run the webhook first make sure you enabled webhooks in your gmeConfig, `config.webhooks.enable = true;`, then add a reference to webhook in the package.json under scripts,
 ```json
   "scripts": {
     "webgme-constraint-checker": "webgme-constraint-checker"
   },
 ```
 
-then invoke `npm run webgme-constraint-checker` from root directory.
+finally invoke `npm run webgme-constraint-checker` from your repository root directory.
 
 
 ### Configuring webhook/router
