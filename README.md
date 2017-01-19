@@ -8,28 +8,33 @@ npm run webhook
 
 ## Using from other repository
 Using the [webgme-cli](https://github.com/webgme/webgme-cli) the following pieces can be imported (execute from root of repository)...
+First make sure you have this repository as a dependency:
+
+```
+npm install --save github:webgme/constraint-checker
+```
+
+(Note when published on npm and if you do not want the master branch do: `npm install webgme-constraint-checker`)
 
 #### Plugin
 This should not be executed by the webhook only and will return an error at invocation from the UI.
 ```
-webgme import plugin ConstraintChecker webgme/constraint-checker
+webgme import plugin ConstraintChecker webgme-constraint-checker
 ```
 
 #### Visualizer
 The is visualizer is a commit-badge show the status of the checks - to integrate it with the ProjectRepositoryWidget see below.
 ```
-webgme import viz ConstraintCheckerCommitBadge webgme/constraint-checker
+webgme import viz ConstraintCheckerCommitBadge webgme-constraint-checker
 ```
 
 #### Router
 The router forwards result/status requests ensuring the user has the right access (route is used by the visualizer).
 ```
-webgme import router ConstraintResult webgme/constraint-checker
+webgme import router ConstraintResults webgme-constraint-checker
 ```
 
 #### Webhook
-The webhook only requires that this repo is a node_module (guarenteed if you imported any of the above).
-
 To start the webhook handler - do `TODO: command that runs .bin command`.
 
 ### Configuring webhook/router
