@@ -49,5 +49,5 @@ In order to add the commit-badge to the project repository widget copy over the 
 
 
 ## Developers
-`npm run webhook` and `npm start`.
+`npm run hook` and `npm start`.
 

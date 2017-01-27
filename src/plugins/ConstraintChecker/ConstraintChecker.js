@@ -71,7 +71,7 @@ define([
 
         coll = db.collection(self.project.projectId);
 
-        coll.updateOne({_id: self.commitHash}, {_id: self.commitHash, isRunning: true}, {upsert: true})
+        coll.updateOne({_id: self.commitHash}, {_id: self.commitHash, isQueued: false, isRunning: true}, {upsert: true})
             .then(function () {
                 var inconsistencies = metarules.checkMetaConsistency(self.core, self.rootNode);
                 if (inconsistencies.length > 0) {
@@ -84,6 +84,7 @@ define([
                 var key,
                     data = {
                         _id: self.commitHash,
+                        isQueued: false,
                         isRunning: false,
                         metaInconsistent: false,
                         hasViolation: false,

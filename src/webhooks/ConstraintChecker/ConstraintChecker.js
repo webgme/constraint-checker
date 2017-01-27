@@ -13,6 +13,7 @@ var webgme = require('webgme'),
     bodyParser = require('body-parser'),
     mongodb = require('mongodb'),
     binRunPlugin = require('webgme/src/bin/run_plugin'),
+    GUID = requireJS('common/util/guid'),
     configDir = path.join(process.cwd(), 'config'),
     gmeConfig = require(configDir),
     componentJson = require(path.join(process.cwd(), 'config', 'components.json')),
@@ -32,6 +33,8 @@ webgme.addToRequireJsPaths(gmeConfig);
 function Handler(options) {
     var app = new Express(),
         db,
+        jobQueue = [],
+        running = [],
         results = [],
         serverUrl,
         server;
@@ -42,6 +45,40 @@ function Handler(options) {
 
     options.mongoUri = options.mongoUri || hookConfig.mongoUri;
     options.port = options.port || hookConfig.port;
+
+    function processJobQueue() {
+        var job,
+            coll;
+
+        if (!hookConfig.maximumConcurrentJobs || running.length < hookConfig.maximumConcurrentJobs) {
+            job = jobQueue.shift();
+
+            if (job) {
+                running.push(job);
+                runPlugin(job.payload)
+                    .finally(function () {
+                        var j;
+                        logger.info('done!!', job.id);
+
+                        for (j = 0; j < running.length; j += 1) {
+                            if (running[j].id === job.id) {
+                                running.splice(j, 1);
+                                break;
+                            }
+                        }
+
+                        processJobQueue();
+                    });
+            }
+        } else {
+            job = jobQueue[jobQueue.length - 1];
+            coll = db.collection(job.payload.projectId);
+            coll.updateOne({_id: job.payload.data.commitHash},
+                {_id: job.payload.data.commitHash, isQueued: true},
+                {upsert: true}
+            );
+        }
+    }
 
     function runPlugin(payload) {
         var args = ['node', 'dummy.js', 'ConstraintChecker', payload.projectName],
@@ -66,8 +103,6 @@ function Handler(options) {
         return binRunPlugin.main(args)
             .then(function (pluginResult) {
                 result.pluginResult = pluginResult;
-                logger.debug(JSON.stringify(pluginResult, null, 2));
-
                 if (pluginResult.success === true) {
                     logger.debug('success');
                 } else if (pluginResult.error) {
@@ -93,10 +128,11 @@ function Handler(options) {
             var payload = req.body;
             logger.debug('hook triggered');
             if (payload.event === 'COMMIT') {
-                runPlugin(payload)
-                    .finally(function () {
-                        logger.debug('done');
-                    });
+                jobQueue.push({
+                    payload: payload,
+                    id: GUID()
+                });
+                processJobQueue();
             } else {
                 logger.warn('Unexpected event', JSON.stringify(payload));
             }
@@ -118,6 +154,7 @@ function Handler(options) {
                     if (result) {
                         status.exists = true;
                         status.isRunning = result.isRunning;
+                        status.isQueued = result.isQueued;
                         status.metaInconsistent = result.metaInconsistent;
                         status.hasViolation = result.hasViolation;
                     }
@@ -147,7 +184,11 @@ function Handler(options) {
         });
 
         app.get('/' + HOOK_ID + '/status', function (req, res) {
-            res.json(results);
+            res.json({
+                jobQueue: jobQueue,
+                running: running,
+                results: results
+            });
         });
 
         server = app.listen(options.port);
@@ -172,6 +213,10 @@ function Handler(options) {
     this.stop = function (callback) {
         var deferred = Q.defer();
         // Shutdown server and disconnect from mongodb.
+        if (running.length > 0 || jobQueue.length > 0) {
+            logger.warn('Running and queued jobs will be lost', running.length, jobQueue.length);
+        }
+
         if (server) {
             server.close();
             server = null;

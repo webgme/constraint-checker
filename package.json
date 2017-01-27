@@ -6,7 +6,7 @@
   "main": "./src/webhooks/ConstraintChecker/ConstraintChecker.js",
   "scripts": {
     "start": "node app.js",
-    "hook": "node ./src/webhooks/ConstraintChecker/ConstraintChecker.js",
+    "hook": "node ./src/webhooks/ConstraintChecker/bin.js",
     "test": "node ./node_modules/mocha/bin/mocha --recursive test",
     "test_cover": "node ./node_modules/istanbul/lib/cli.js --hook-run-in-context cover node_modules/mocha/bin/_mocha -- -R spec --timeout 10000 --recursive test"
   },

@@ -81,11 +81,11 @@ describe('ConstraintChecker WebHook', function () {
         hookHandler.stop(done);
     });
 
-    it('should return empty array at /%HOOK_ID%/status when nothing ran', function (done) {
+    it('should return empty arrays at /%HOOK_ID%/status when nothing ran', function (done) {
         superagent.get(urlFor('status'))
             .end(function (err, res) {
                 expect(res.statusCode).to.equal(200);
-                expect(res.body).to.deep.equal([]);
+                expect(res.body).to.deep.equal({ jobQueue: [], running: [], results: [] });
                 done();
             });
     });
@@ -232,6 +232,7 @@ describe('ConstraintChecker WebHook', function () {
                                         expect(res.body).to.deep.equal({
                                             exists: true,
                                             hasViolation: false,
+                                            isQueued: false,
                                             isRunning: false,
                                             metaInconsistent: false
                                         });

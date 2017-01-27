@@ -12,10 +12,13 @@ define([
 ], function (ConstraintCheckerController, ConstraintCheckResultsDialog) {
     'use strict';
 
-    var ConstraintCheckerCommitBadgeWidget = function (containerEl, client, params) {
+    var STATUS_TIMEOUT_LENGTH = 5000;
+
+    function ConstraintCheckerCommitBadgeWidget(containerEl, client, params) {
         var self = this;
         this._client = client;
         this._commitHash = params.id;
+        this._timeoutId = null;
 
         this._destroyed = false;
         this.$el = $('<i>', {
@@ -24,12 +27,17 @@ define([
 
         $(containerEl).append(this.$el);
 
-        ConstraintCheckerController.getStatus(client.getActiveProjectId(), this._commitHash, function (err, status) {
+        this._updateStatus();
+    }
+
+    ConstraintCheckerCommitBadgeWidget.prototype._updateStatus = function () {
+        var self = this;
+        ConstraintCheckerController.getStatus(this._client.getActiveProjectId(), this._commitHash, function (err, status) {
             if (self._destroyed) {
                 return;
             }
 
-            self.$el.removeClass('loading');
+            self.$el.removeClass('loading is-running fa fa-circle');
 
             if (err) {
                 self.$el.addClass('error fa fa-exclamation');
@@ -37,9 +45,18 @@ define([
             } else if (status.exists === false) {
                 self.$el.addClass('unavailable fa fa-circle-thin');
                 self.$el.attr('title', 'Results unavailable');
+            } else if (status.isQueued === true) {
+                self.$el.addClass('is-running fa fa-circle');
+                self.$el.attr('title', 'Job is queued...');
+                self._timeoutId = setTimeout(function () {
+                    self._updateStatus();
+                }, STATUS_TIMEOUT_LENGTH);
             } else if (status.isRunning === true) {
                 self.$el.addClass('is-running fa fa-circle');
                 self.$el.attr('title', 'Meta constraints are being checked...');
+                self._timeoutId = setTimeout(function () {
+                    self._updateStatus();
+                }, STATUS_TIMEOUT_LENGTH);
             } else if (status.metaInconsistent === true) {
                 self.$el.addClass('meta-inconsistent fa fa-times');
                 self.$el.attr('title', 'The meta is inconsistent!');
@@ -48,7 +65,7 @@ define([
                 self.$el.addClass('has-violation fa fa-times');
                 self.$el.attr('title', 'View meta constraint violations');
                 self.$el.on('click', function () {
-                    ConstraintCheckerController.getResult(client.getActiveProjectId(), self._commitHash,
+                    ConstraintCheckerController.getResult(self._client.getActiveProjectId(), self._commitHash,
                         function (err, result) {
                             if (err) {
                                 console.log(err);
@@ -74,6 +91,7 @@ define([
 
     ConstraintCheckerCommitBadgeWidget.prototype.destroy = function () {
         this.$el.off('click');
+        clearTimeout(this._timeoutId);
         this._destroyed = true;
     };
 

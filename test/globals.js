@@ -62,6 +62,7 @@ global.constraintCheckerHookConfig = {
     ],
     "addAtProjectCreation": true,
     "activeAtProjectCreation": true,
+    "maximumConcurrentJobs": 1,
     "mongoUri": "mongodb://127.0.0.1:27017/webgme_constraint_results_tests",
     "mongoOptions": {}
 };
