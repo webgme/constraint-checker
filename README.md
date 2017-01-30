@@ -2,7 +2,12 @@
 [![Build Status](https://travis-ci.org/webgme/webgme.svg?branch=master)](https://travis-ci.org/webgme/webgme)
 
 # Constraint Checker
-Evaluates constraints (meta-rules) on every commit to a project.
+Evaluates constraints (meta-rules) on every commit to a project and integrates with the ProjectRepositoryWidget to display the results.
+
+![ProjectRepository](img/ProjectRepository.png "View the results for constraint-checking done on server")
+
+![ConstraintDialog](img/ConstraintDialog.png "View details of the unfulfilled constraints")
+
 
 ## Using from other repository
 Using the [webgme-cli](https://github.com/webgme/webgme-cli) the following pieces can be imported (execute from root of repository)...
