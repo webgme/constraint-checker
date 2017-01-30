@@ -6,6 +6,8 @@ Evaluates constraints (meta-rules) on every commit to a project and integrates w
 
 ![ProjectRepository](img/ProjectRepository.png "View the results for constraint-checking done on server")
 
+Details about violations can be viewed for each commit.
+
 ![ConstraintDialog](img/ConstraintDialog.png "View details of the unfulfilled constraints")
 
 
