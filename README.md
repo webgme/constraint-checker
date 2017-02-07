@@ -53,8 +53,6 @@ In order to add the commit-badge to the project repository widget copy over the 
 `npm run hook` and `npm start`.
 #### Publish new release at npm
  ```
- npm prune
- npm install
  npm version 1.0.0 -m "Release %s"
  git push origin master
  git checkout v1.0.0

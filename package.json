@@ -3,6 +3,10 @@
   "bin": {
     "webgme-constraint-checker": "./bin/webgme-constraint-checker"
   },
+  "author": {
+    "name": "WebGME Development Team",
+    "url": "https://webgme.org"
+  },
   "main": "./src/webhooks/ConstraintChecker/ConstraintChecker.js",
   "scripts": {
     "start": "node app.js",
@@ -10,7 +14,12 @@
     "test": "node ./node_modules/mocha/bin/mocha --recursive test",
     "test_cover": "node ./node_modules/istanbul/lib/cli.js --hook-run-in-context cover node_modules/mocha/bin/_mocha -- -R spec --timeout 10000 --recursive test"
   },
-  "version": "1.0.0",
+  "version": "1.0.0-beta1",
+  "keywords": [
+    "webgme",
+    "webgme-component",
+    "constraint-checking"
+  ],
   "peerDependencies": {
     "webgme": "^2.8.0"
   },
