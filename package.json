@@ -15,6 +15,10 @@
     "test": "node ./node_modules/mocha/bin/mocha --recursive test",
     "test_cover": "node ./node_modules/istanbul/lib/cli.js --hook-run-in-context cover node_modules/mocha/bin/_mocha -- -R spec --timeout 10000 --recursive test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webgme/constraint-checker.git"
+  },
   "version": "1.1.0",
   "keywords": [
     "webgme",
