@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/webgme/webgme.svg?branch=master)](https://travis-ci.org/webgme/webgme)
 
 # Constraint Checker
-Evaluates constraints (meta-rules) on every commit to a project and integrates with the ProjectRepositoryWidget to display the results.
+Evaluates constraints (meta-rules) on every commit to a project and integrates with the ProjectRepositoryWidget to display the results. The results are stored in mongodb, see below for how to configure mongo-uri etc.
 
 ![ProjectRepository](img/ProjectRepository.png "View the results for constraint-checking done on server")
 
@@ -56,5 +56,17 @@ In order to add the commit-badge to the project repository widget copy over the 
 
 
 ## Developers
+#### Running app
 `npm run hook` and `npm start`.
+#### Publish new release at npm
+ ```
+ npm prune
+ npm install
+ npm version 1.0.0 -m "Release %s"
+ git push origin master
+ git checkout v1.0.0
+ git push origin v1.0.0
+ npm publish ./
+ ```
+
 
