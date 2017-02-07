@@ -8,6 +8,7 @@
     "url": "https://webgme.org"
   },
   "main": "./src/webhooks/ConstraintChecker/ConstraintChecker.js",
+  "description": "Webhook and ui-pieces for continous evaluation of constraints.",
   "scripts": {
     "start": "node app.js",
     "hook": "node ./src/webhooks/ConstraintChecker/bin.js",
