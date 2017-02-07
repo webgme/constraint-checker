@@ -13,13 +13,6 @@ Details about violations can be viewed for each commit.
 
 ## Using from other repository
 Using the [webgme-cli](https://github.com/webgme/webgme-cli) the following pieces can be imported (execute from root of repository)...
-First make sure you have this repository as a dependency:
-
-```
-npm install --save github:webgme/constraint-checker
-```
-
-(Note when published on npm and if you do not want the master branch do: `npm install webgme-constraint-checker`)
 
 #### Plugin
 This should not be executed by the webhook only and will return an error at invocation from the UI.
