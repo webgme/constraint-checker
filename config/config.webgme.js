@@ -14,12 +14,19 @@ config.plugin.basePaths.push(__dirname + '/../src/plugins');
 config.visualization.panelPaths.push(__dirname + '/../src/visualizers/panels');
 
 
-config.rest.components['routers/ConstraintResults'] = __dirname + '/../src/routers/ConstraintResults/ConstraintResults.js';
+config.rest.components['ConstraintResults'] = {
+  src: __dirname + '/../src/routers/ConstraintResults/ConstraintResults.js',
+  mount: 'routers/ConstraintResults',
+  options: {}
+};
 
+// Visualizer descriptors
+config.visualization.visualizerDescriptors.push(__dirname + '/../src/visualizers/Visualizers.json');
 // Add requirejs paths
 config.requirejsPaths = {
   'panels': './src/visualizers/panels',
-  'widgets': './src/visualizers/widgets'
+  'widgets': './src/visualizers/widgets',
+  'webgme-constraint-checker': './src/common'
 };
 
 

@@ -7,10 +7,12 @@
 define(['superagent'], function (superagent) {
     'use strict';
 
+    var routeURL = WebGMEGlobal.gmeConfig.rest.components.ConstraintResults.mount;
+
     function getStatus(projectId, commitHash, callback) {
         var project = projectId.split('+');
 
-        superagent.get('/routers/ConstraintResults/' + project[0] + '/' + project[1] + '/status/' + commitHash.slice(1))
+        superagent.get(routeURL + '/' + project[0] + '/' + project[1] + '/status/' + commitHash.slice(1))
             .end(function (err, result) {
                 callback(err, result ? result.body : {});
             });
@@ -19,7 +21,7 @@ define(['superagent'], function (superagent) {
     function getResult(projectId, commitHash, callback) {
         var project = projectId.split('+');
 
-        superagent.get('/routers/ConstraintResults/' + project[0] + '/' + project[1] + '/result/' + commitHash.slice(1))
+        superagent.get(routeURL + '/' + project[0] + '/' + project[1] + '/result/' + commitHash.slice(1))
             .end(function (err, result) {
                 callback(err, result ? result.body : {});
             });
